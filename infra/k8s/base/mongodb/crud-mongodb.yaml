@@ -1,0 +1,40 @@
+apiVersion: psmdb.percona.com/v1
+kind: PerconaServerMongoDB
+metadata:
+  name: crud-mongodb
+  namespace: mongodb # 사용하는 네임스페이스로 변경 가능
+spec:
+  # 현재 클러스터에 설치된 Percona Operator 버전에 맞게 매칭하세요 (예: 1.15.0, 1.16.0 등)
+  crVersion: 1.16.0
+  image: percona/percona-server-mongodb:6.0.14-11 # 원하는 MongoDB 버전 이미지
+  imagePullPolicy: IfNotPresent
+
+  # 간단한 CRUD 환경이므로 아키텍처가 복잡해지는 샤딩은 끕니다.
+  sharding:
+    enabled: false
+
+  # 위에서 만든 1번 시크릿의 name과 일치시킵니다.
+  secrets:
+    users: crud-mongodb-secrets
+
+  # 레플리카 셋 설정 (1 Primary + 2 Secondary)
+  replsets:
+    - name: rs0
+      size: 3 # 3을 지정하면 오퍼레이터가 자동 투표권을 가진 1 Primary, 2 Secondary 고가용성 구조를 만듭니다.
+
+      # 볼륨 스토리지 설정 (쿠버네티스 환경의 StorageClass를 통해 디스크 생성)
+      volumeSpec:
+        persistentVolumeClaim:
+          storageClassName: "local-path" # 특정 StorageClass를 지정하려면 주석을 해제하고 기재하세요.
+          resources:
+            requests:
+              storage: 10Gi # 프로젝트 규모에 맞춰 용량 조절
+
+      # CRUD 프로젝트용 컨테이너 리소스 할당량 (컴퓨터 사양에 맞게 조정하세요)
+      resources:
+        requests:
+          cpu: "300m"
+          memory: "512Mi"
+        limits:
+          cpu: "1"
+          memory: "1Gi"
