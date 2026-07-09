@@ -1,0 +1,31 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: crud-postgres
+  namespace: postgres # 원하는 네임스페이스로 변경 가능
+spec:
+  instances: 3 # 인스턴스 3개를 지정하면 자동으로 HA(고가용성) 구조가 완성됩니다.
+
+  # 사용할 PostgreSQL 버전 이미지 (2026년 기준 안정적인 16 버전 사용)
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  # 최초 데이터베이스 및 관리자 계정 생성
+  bootstrap:
+    initdb:
+      database: notes_db   # 생성할 DB 이름
+      owner: admin     # DB 소유자(유저) 이름
+      # Note: 비밀번호 설정을 생략하면 CNPG가 아주 안전한 임의의 비밀번호를 자동 생성합니다.
+
+  # 스토리지(디스크) 설정
+  storage:
+    size: 10Gi # 필요에 따라 용량 조절
+    storageClass: "local-path" # 사용 중인 StorageClass가 있다면 주석을 해제하고 기재하세요.
+
+  # 가벼운 CRUD용 컨테이너 리소스 제한 (Proxmox 환경에 맞게 조정 가능)
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "200m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
