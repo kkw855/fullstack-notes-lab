@@ -4,7 +4,7 @@
 # 1단계: 빌드 스테이지 (SBT & JDK 포함)
 # ==========================================
 # 사용 중인 Java 및 스칼라 버전과 매칭되는 공식 sbt 이미지 사용
-FROM sbtscala/sbt:eclipse-temurin-jammy-21.0.2_1.10.0_3.3.3 AS builder
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.11_10_1.x AS builder
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ USER scala-user
 
 # 1단계 빌드 컴파일 결과물(Fat JAR)만 가볍게 복사
 # (프로젝트명과 버전은 본인의 build.sbt 설정에 맞게 매칭)
-COPY --from=builder /app/target/scala-3.8.4/custom-scala-api-assembly-0.1.0-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/target/out/jvm/scala-3.8.4/custom-scala-api/custom-scala-api-assembly-0.1.0-SNAPSHOT.jar ./app.jar
 
 # 쿠버네티스 컨테이너 환경을 위한 필수 JVM 최적화 옵션 설정
 # - MaxRAMPercentage: 쿠버네티스 파드 메모리 Limit의 75%를 JVM 힙 메모리로 할당 (OOMKilled 방지)
