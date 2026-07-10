@@ -1,5 +1,5 @@
 # Dockerfile
-FROM arigaac/atlas:latest-alpine
+FROM arigaio/atlas:latest-alpine
 
 # 마이그레이션 파일들을 컨테이너 내부로 복사
 COPY migrations /migrations
