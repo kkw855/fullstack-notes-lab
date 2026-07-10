@@ -1,0 +1,8 @@
+# Dockerfile
+FROM arigaac/atlas:latest-alpine
+
+# 마이그레이션 파일들을 컨테이너 내부로 복사
+COPY migrations /migrations
+
+# 컨테이너 실행 시 기본 디렉토리를 migrations로 설정
+WORKDIR /migrations
