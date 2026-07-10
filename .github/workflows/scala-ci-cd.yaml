@@ -48,7 +48,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
+      # 1️⃣ [기존 단계] 스칼라 API 애플리케이션 도커 이미지 빌드 및 푸시
+      - name: Build and push Scala API Docker image
         uses: docker/build-push-action@v5
         with:
           # 💡 중요 1: 컨텍스트와 도커파일 위치를 스칼라 서브폴더로 정확히 지정합니다.
@@ -61,6 +62,18 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/custom-scala-api:latest            
             ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}
 
+      # 2️⃣ [추가 단계] Atlas 마이그레이션 도커 이미지 빌드 및 푸시
+      - name: Build and push Atlas Migration Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./custom-scala-api
+          file: ./custom-scala-api/Dockerfile.migration # 💡 마이그레이션용 도커파일 지정
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/atlas-migrations:latest            
+            ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}
+
+      # 3️⃣ [수정 단계] GitOps 레포지토리 업데이트 (deployment 및 migration-job 둘 다 패치)
       - name: Update GitOps repository
         shell: bash
         env:
@@ -75,15 +88,22 @@ jobs:
           git clone https://github.com/kkw855/fullstack-notes-scala-gitops.git gitops
           cd gitops
 
-          # 스칼라 이미지 주소 양식에 맞게 패치 수행
+          # OS 환경(Mac vs Linux)에 따른 sed 치환 처리
           if [[ "$OSTYPE" == "darwin"* ]]; then
+            # 1. API 서버 이미지 태그 업데이트 (기존)
             sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}|g" deployment.yaml
+            # 2. Atlas 마이그레이션 Job 이미지 태그 업데이트 (추가)
+            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}|g" migration-job.yaml
           else
+            # 1. API 서버 이미지 태그 업데이트 (기존)
             sed -i "s|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}|g" deployment.yaml
+            # 2. Atlas 마이그레이션 Job 이미지 태그 업데이트 (추가)
+            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}|g" migration-job.yaml
           fi
           
+          # Git 커밋 및 푸시
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add deployment.yaml
-          git commit -m "Update Scala API image to ${{ github.sha }}"
+          git add deployment.yaml migration-job.yaml
+          git commit -m "Update Scala API & Atlas Migration images to ${{ github.sha }}"
           git push -f https://${GIT_TOKEN}@github.com/kkw855/fullstack-notes-scala-gitops.git main

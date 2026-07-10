@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 CREATE TABLE notes
 (
     id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
