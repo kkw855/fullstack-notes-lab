@@ -13,7 +13,10 @@ import notes.domain.note.*
 
 trait Notes {
   def all(): IO[List[Note]]
-  def create(noteInfo: NoteInfo): IO[UUID]
+  def find(id: UUID): IO[Option[Note]]
+  def create(noteInfo: NoteInfo): IO[Note]
+  def update(id: UUID, noteInfo: NoteInfo): IO[Option[Note]]
+  def delete(id: UUID): IO[Int]
 }
 
 class LiveNotes private (xa: Transactor[IO]) extends Notes {
@@ -27,12 +30,28 @@ class LiveNotes private (xa: Transactor[IO]) extends Notes {
         created_at,
         updated_at
       FROM notes
+      ORDER BY created_at DESC
     """
       .query[Note]
       .to[List]
       .transact(xa)
 
-  override def create(noteInfo: NoteInfo): IO[UUID] =
+  override def find(id: UUID): IO[Option[Note]] =
+    sql"""
+      SELECT
+        id,
+        title,
+        content,
+        created_at,
+        updated_at
+      FROM notes
+      WHERE id = $id
+    """
+      .query[Note]
+      .option
+      .transact(xa)
+
+  override def create(noteInfo: NoteInfo): IO[Note] =
     sql"""
       INSERT INTO notes(
         title,
@@ -42,8 +61,24 @@ class LiveNotes private (xa: Transactor[IO]) extends Notes {
         ${noteInfo.content}
       )
     """.update
-      .withUniqueGeneratedKeys[UUID]("id")
+      .withUniqueGeneratedKeys[Note]("id", "title", "content", "created_at", "updated_at")
       .transact(xa)
+
+  override def update(id: UUID, noteInfo: NoteInfo): IO[Option[Note]] =
+    sql"""
+    UPDATE notes
+    SET
+      title = ${noteInfo.title},
+      content = ${noteInfo.content}
+    WHERE id = $id
+    RETURNING id, title, content, created_at, updated_at
+  """
+      .query[Note]
+      .option
+      .transact(xa)
+
+  override def delete(id: UUID): IO[Int] =
+    sql"DELETE FROM notes WHERE id = $id".update.run.transact(xa)
 }
 
 object LiveNotes {

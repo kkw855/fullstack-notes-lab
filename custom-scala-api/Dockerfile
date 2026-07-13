@@ -27,17 +27,16 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # 보안 가이드: 프로덕션에서는 절대 root 계정으로 컨테이너를 구동하지 않습니다.
-RUN useradd -m -u 1001 scala-user
+RUN useradd -u 1001 scala-user
 USER scala-user
 
 # 1단계 빌드 컴파일 결과물(Fat JAR)만 가볍게 복사
 # (프로젝트명과 버전은 본인의 build.sbt 설정에 맞게 매칭)
-COPY --from=builder /app/target/out/jvm/scala-3.8.4/custom-scala-api/custom-scala-api-assembly-0.1.0-SNAPSHOT.jar ./app.jar
+COPY --from=builder --chown=scala-user:scala-user /app/target/out/jvm/scala-3.8.4/custom-scala-api/app.jar ./app.jar
 
 # 쿠버네티스 컨테이너 환경을 위한 필수 JVM 최적화 옵션 설정
 # - MaxRAMPercentage: 쿠버네티스 파드 메모리 Limit의 75%를 JVM 힙 메모리로 할당 (OOMKilled 방지)
-ENV JAVA_OPTS="-XX:+UseG1GC \
-               -XX:+ExitOnOutOfMemoryError \
+ENV JAVA_OPTS="-XX:+ExitOnOutOfMemoryError \
                -XX:InitialRAMPercentage=50.0 \
                -XX:MaxRAMPercentage=75.0"
 
@@ -45,4 +44,4 @@ ENV JAVA_OPTS="-XX:+UseG1GC \
 EXPOSE 5002
 
 # 실행 명령
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["exec java $JAVA_OPTS -jar app.jar"]

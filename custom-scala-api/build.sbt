@@ -5,7 +5,7 @@ scalaVersion := "3.8.4"
 val catsVersion = "2.13.0"
 val catsEffectVersion = "3.7.0"
 val log4catsVersion = "2.8.0"
-val logbackVersion = "1.5.37"
+val logbackVersion = "1.5.38"
 val pureConfigVersion = "0.17.10"
 val circeVersion = "0.14.16"
 val circeFs2Version = "0.14.1"
@@ -17,11 +17,9 @@ lazy val root = rootProject
     name := "custom-scala-api",
     scalacOptions ++= Seq(
       "-deprecation", // 구형 API 사용 시 상세한 경고 출력
-      "-Wunused:imports", // 미사용 임포트 감지
+      "-Wunused:all", // 모든 미사용 코드 감지
       "-Werror" // 경고(Warning)가 발생하면 컴파일 에러로 취급 (선택 사항)
     ),
-    Compile / run / mainClass := Some("notes.Application"),
-    Compile / run / fork := true,
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % catsVersion,
       "org.typelevel" %% "cats-effect" % catsEffectVersion,
@@ -39,6 +37,9 @@ lazy val root = rootProject
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test
     ),
+    Compile / run / mainClass := Some("notes.Application"),
+    Compile / run / fork := true,
+    assembly / assemblyJarName := "app.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", "maven", xs*) => MergeStrategy.discard
       case PathList("META-INF", xs*) =>
