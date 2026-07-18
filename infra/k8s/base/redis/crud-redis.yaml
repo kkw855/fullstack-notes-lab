@@ -1,0 +1,25 @@
+# redis-values.yaml
+architecture: replication
+
+auth:
+  enabled: true
+  password: "Password123!" # 강의용 레디스 비밀번호
+
+sentinel:
+  enabled: true
+  masterSet: mymaster
+  quorum: 2
+
+# 워커 노드 3대에 고르게 분산 배치하기 위한 안티 어피니티 설정 (기본 활성화)
+podAntiAffinityPreset: hard
+
+# ---------------------------------------------------
+# 💾 스토리지 및 볼륨 설정 추가
+# ---------------------------------------------------
+global:
+  storageClass: "local-path" # 👈 유저님의 local-path를 명시합니다!
+
+# Bitnami 컨테이너(Non-root 유저)가 로컬 디스크 폴더에
+# 쓰기 권한 에러(Permission Denied)를 내지 않도록 자동 조절해 주는 필수 치트키 옵션
+volumePermissions:
+  enabled: true
