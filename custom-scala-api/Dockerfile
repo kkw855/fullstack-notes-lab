@@ -44,4 +44,4 @@ ENV JAVA_OPTS="-XX:+ExitOnOutOfMemoryError \
 EXPOSE 5002
 
 # 실행 명령
-ENTRYPOINT ["exec java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT exec java $JAVA_OPTS -jar app.jar
