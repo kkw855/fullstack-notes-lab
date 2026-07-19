@@ -1,0 +1,5 @@
+{
+  "target": "react",
+  "quoteStyle": "single",
+  "semicolons": false
+}
