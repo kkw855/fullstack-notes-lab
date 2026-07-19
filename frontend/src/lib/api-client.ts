@@ -1,4 +1,4 @@
-import Axios/*, { InternalAxiosRequestConfig }*/ from 'axios'
+import Axios /*, { InternalAxiosRequestConfig }*/ from 'axios'
 
 // import { useNotifications } from '@/components/ui/notifications'
 // import { env } from '@/config/env'
@@ -15,7 +15,9 @@ import Axios/*, { InternalAxiosRequestConfig }*/ from 'axios'
 
 export const api = Axios.create({
   // baseURL: env.API_URL,
-  baseURL: 'localhost:5001/api',
+  baseURL: '/api',
+  // 💡 200대 코드가 아니어도 304라면 에러를 던지지 말고 정상 응답으로 처리하라고 명령합니다.
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 304,
 })
 
 // api.interceptors.request.use(authRequestInterceptor)

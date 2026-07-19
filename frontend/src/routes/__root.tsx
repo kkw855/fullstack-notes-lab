@@ -1,12 +1,14 @@
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import { type ReactNode, useState } from 'react'
+
+import { Navbar } from '#/components/navbar'
+import { Toaster } from '#/components/ui/sonner'
+import { queryConfig } from '#/lib/react-query'
 
 import appCss from '../styles.css?url'
-import { queryConfig } from '#/lib/react-query.ts'
-import { type ReactNode, useState } from 'react'
-import { Toaster } from '#/components/ui/sonner.tsx'
 
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
 
@@ -51,7 +53,10 @@ function RootDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <div className="min-h-screen">
+            <Navbar />
+            {children}
+          </div>
         </QueryClientProvider>
         <Toaster position="top-center" />
         <TanStackDevtools
