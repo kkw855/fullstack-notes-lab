@@ -3,8 +3,8 @@ import { PlusIcon } from 'lucide-react'
 
 export const Navbar = () => {
   return (
-    <header className="border-b">
-      <div className="mx-auto max-w-6xl bg-[#100B0B] p-4">
+    <header className="border-b bg-[#202020]">
+      <div className="mx-auto max-w-6xl  p-4">
         <div className="flex items-center justify-between">
           <h1 className="font-mono text-3xl font-bold tracking-tight text-[#20B658]">
             ThinkBoard

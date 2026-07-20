@@ -168,7 +168,7 @@ body {
   color: var(--sea-ink);
   font-family: var(--font-sans);
 
-  background: #252525 !important;
+  background: #100B0B !important;
 
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
