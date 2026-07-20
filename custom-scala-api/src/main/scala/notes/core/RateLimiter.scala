@@ -43,7 +43,7 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
       |
       |if currentRequests < limit then
       |    -- 제한 미만이면 현재 시간 추가 후 승인 (1 리턴)
-      |    redis.call('zadd', key, now, now)
+      |    redis.call('zadd', key, now, ARGV[1])
       |    redis.call('expire', key, math.ceil(window / 1000) + 1)
       |    return 1
       |else
