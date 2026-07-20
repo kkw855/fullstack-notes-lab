@@ -41,7 +41,7 @@ WORKDIR /app
 USER node
 
 COPY --from=deps    --chown=node:node /app/node_modules ./node_modules
-COPY --from=builder --chown=node:node /app/.output      ./.output
+COPY --from=builder --chown=node:node /app/dist         ./dist
 COPY --from=builder --chown=node:node /app/package.json ./package.json
 
 # 쿠버네티스 컨테이너 환경을 위한 Node 런타임 옵션
@@ -55,4 +55,4 @@ ENV NODE_ENV=production \
 EXPOSE 3000
 
 # 실행 명령
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "dist/server/server.js"]
