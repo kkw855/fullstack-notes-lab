@@ -12,7 +12,7 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Server
 
 import notes.config.AppConfig
-import notes.modules.{Core, Database, HttpApi}
+import notes.modules.{Core, Database, HttpApi, Redis}
 
 object Application extends IOApp.Simple {
 
@@ -20,10 +20,11 @@ object Application extends IOApp.Simple {
 
   override def run: IO[Unit] =
     ConfigSource.default.loadF[IO, AppConfig]().flatMap {
-      case AppConfig(postgresConfig, emberConfig) =>
+      case AppConfig(postgresConfig, emberConfig, redisConfig) =>
         val appResource: Resource[IO, Server] = for {
           xa <- Database.makePostgresResource(postgresConfig)
-          core <- Core(xa)
+          redisCmd <- Redis.makeRedisResource(redisConfig)
+          core <- Core(xa, redisCmd)
           httpApi <- HttpApi(core)
           server <- EmberServerBuilder
             .default[IO]

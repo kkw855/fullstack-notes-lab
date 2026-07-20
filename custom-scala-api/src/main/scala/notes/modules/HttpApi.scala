@@ -11,7 +11,7 @@ import notes.http.routes.{HealthRoutes, NoteRoutes}
 
 class HttpApi private (core: Core) {
   private val healthRoutes = HealthRoutes.apply.routes
-  private val noteRoutes = NoteRoutes(core.notes).routes
+  private val noteRoutes = NoteRoutes(core.notes, core.rateLimiter).routes
 
   // CORS 기본 정책 및 글로벌 예외 복구 탑재
   val endPoints: HttpRoutes[IO] = ErrorHandling.Recover.total(

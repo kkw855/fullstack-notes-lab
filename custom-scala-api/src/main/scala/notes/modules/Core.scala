@@ -4,15 +4,21 @@ import cats.effect.{IO, Resource}
 
 import doobie.hikari.HikariTransactor
 
-import notes.core.{LiveNotes, Notes}
+import dev.profunktor.redis4cats.RedisCommands
 
-class Core private (val notes: Notes) {}
+import notes.core.{LiveNotes, LiveRateLimiter, Notes, RateLimiter}
+
+class Core private (val notes: Notes, val rateLimiter: RateLimiter) {}
 
 object Core {
-  def apply(xa: HikariTransactor[IO]): Resource[IO, Core] = {
+  def apply(
+      xa: HikariTransactor[IO],
+      redisCmd: RedisCommands[IO, String, String]
+  ): Resource[IO, Core] = {
     val coreIO = for {
       liveNotes <- LiveNotes(xa)
-    } yield new Core(liveNotes)
+      liveRateLimiter <- LiveRateLimiter(redisCmd)
+    } yield new Core(liveNotes, liveRateLimiter)
 
     Resource.eval(coreIO)
   }

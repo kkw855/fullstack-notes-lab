@@ -11,6 +11,7 @@ val circeVersion = "0.14.16"
 val circeFs2Version = "0.14.1"
 val http4sVersion = "0.23.36"
 val doobieVersion = "1.0.0-RC12"
+val redis4cats = "2.0.5"
 
 lazy val root = rootProject
   .settings(
@@ -35,7 +36,8 @@ lazy val root = rootProject
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
-      "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test
+      "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test,
+      "dev.profunktor" %% "redis4cats-effects" % redis4cats
     ),
     Compile / run / mainClass := Some("notes.Application"),
     Compile / run / fork := true,

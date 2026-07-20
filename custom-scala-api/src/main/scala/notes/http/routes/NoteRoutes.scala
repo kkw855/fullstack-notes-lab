@@ -10,16 +10,19 @@ import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.server.*
 
-import notes.core.Notes
+import notes.core.{Notes, RateLimiter}
 import notes.domain.note.NoteInfo
 import notes.http.responses.FailureResponse
 import notes.http.validation.syntax.*
 
 final case class JsonResult(message: String) derives Codec.AsObject
 
-class NoteRoutes private (notes: Notes) extends HttpValidationDsl {
+class NoteRoutes private (notes: Notes, rateLimiter: RateLimiter) extends HttpValidationDsl {
   private val allNotesRoute: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root =>
-    notes.all().flatMap(Ok(_))
+    rateLimiter.isAllowed("rate:my-rate-limit", maxRequests = 10, windowSeconds = 20).flatMap {
+      case true  => notes.all().flatMap(Ok(_))
+      case false => TooManyRequests(JsonResult("Too many requests, please try again later"))
+    }
   }
 
   private val createNoteRoute = HttpRoutes.of[IO] { case req @ POST -> Root =>
@@ -34,10 +37,10 @@ class NoteRoutes private (notes: Notes) extends HttpValidationDsl {
   private val findNoteRoute: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / UUIDVar(id) =>
     notes.find(id).flatMap {
       case Some(note) => Ok(note)
-      case None => NotFound(FailureResponse(s"Note $id not found."))
+      case None       => NotFound(FailureResponse(s"Note $id not found."))
     }
   }
-  
+
   private val updateNoteRoute = HttpRoutes.of[IO] { case req @ PUT -> Root / UUIDVar(id) =>
     req.validate[NoteInfo] { noteInfo =>
       for {
@@ -53,7 +56,7 @@ class NoteRoutes private (notes: Notes) extends HttpValidationDsl {
   private val deleteNoteRoute = HttpRoutes.of[IO] { case DELETE -> Root / UUIDVar(id) =>
     notes.delete(id).flatMap {
       case count if count > 0 => Ok(JsonResult("Note deleted successfully!"))
-      case _ => NotFound(FailureResponse(s"Cannot delete note $id: not found"))
+      case _                  => NotFound(FailureResponse(s"Cannot delete note $id: not found"))
     }
   }
 
@@ -63,5 +66,5 @@ class NoteRoutes private (notes: Notes) extends HttpValidationDsl {
 }
 
 object NoteRoutes {
-  def apply(notes: Notes): NoteRoutes = new NoteRoutes(notes)
+  def apply(notes: Notes, rateLimiter: RateLimiter): NoteRoutes = new NoteRoutes(notes, rateLimiter)
 }
