@@ -44,6 +44,9 @@ COPY --from=deps    --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/dist         ./dist
 COPY --from=builder --chown=node:node /app/package.json ./package.json
 
+# 🌟 [수정] 프로젝트 루트에 있는 프로덕션 서버 구동 파일을 복사합니다.
+COPY --from=builder --chown=node:node /app/server.prod.mjs ./server.prod.mjs
+
 # 쿠버네티스 컨테이너 환경을 위한 Node 런타임 옵션
 # - max-old-space-size: 파드 메모리 Limit보다 낮게 잡아 OOMKilled 방지
 ENV NODE_ENV=production \
@@ -54,5 +57,5 @@ ENV NODE_ENV=production \
 # 애플리케이션 포트 개방 (TanStack Start SSR 서버)
 EXPOSE 3000
 
-# 실행 명령
-CMD ["node", "dist/server/server.js"]
+# 🌟 [수정] 핸들러가 아닌, 실제 리스닝 서버인 'server.prod.mjs'를 실행합니다.
+CMD ["node", "server.prod.mjs"]
