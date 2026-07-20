@@ -1,0 +1,95 @@
+name: Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'frontend/**' # 💡 중요: 프론트엔드 폴더 내부가 변경될 때만 독립적으로 실행됨
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build-and-push:
+    runs-on: arc-runner-set-lab
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 💡 [선택 사항] 도커 빌드 전에 GHA 러너단에서 lint/test를 먼저 수행하고 싶다면 아래 주석을 해제하세요.
+      # - name: Set up Node.js 24
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '24'
+      #     cache: 'npm' # npm 의존성 캐싱 활성화
+      #     cache-dependency-path: frontend/package-lock.json
+      # - name: Install dependencies
+      #   run: npm ci
+      #   working-directory: ./frontend
+      # - name: Run lint & tests
+      #   run: npm run lint && npm test
+      #   working-directory: ./frontend
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 1️⃣ 프론트엔드(TanStack Start SSR) 도커 이미지 빌드 및 푸시
+      - name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          # 💡 중요 1: 컨텍스트와 도커파일 위치를 프론트엔드 서브폴더로 정확히 지정합니다.
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          # 💡 중요 2: github.repository를 그대로 쓰면 스칼라 이미지와 이름이 충돌(오버라이트)되므로
+          # 뒤에 명시적으로 /notes-frontend 이름을 붙여 분리합니다.
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/notes-frontend:latest
+            ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}
+
+      # 2️⃣ GitOps 레포지토리 업데이트 (deployment 이미지 태그 패치)
+      - name: Update GitOps repository
+        shell: bash
+        env:
+          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+        run: |
+          git config --global credential.helper store
+          echo "https://${GIT_TOKEN}:x-oauth-basic@github.com" > ~/.git-credentials
+
+          rm -rf gitops
+
+          # 💡 프론트엔드 전용 GitOps 레포지토리
+          git clone https://github.com/kkw855/fullstack-notes-frontend-gitops.git gitops
+          cd gitops
+
+          # OS 환경(Mac vs Linux)에 따른 sed 치환 처리
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" deployment.yaml
+          else
+            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" deployment.yaml
+          fi
+
+          # Git 커밋 및 푸시
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add deployment.yaml
+          git commit -m "Update Frontend image to ${{ github.sha }}"
+          git push -f https://${GIT_TOKEN}@github.com/kkw855/fullstack-notes-frontend-gitops.git main

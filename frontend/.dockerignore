@@ -1,0 +1,10 @@
+node_modules
+dist
+.tanstack
+.vscode
+.idea
+.git
+.gitignore
+*.log
+.DS_Store
+README.md
