@@ -33,17 +33,18 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
       |local now = tonumber(ARGV[1])
       |local window = tonumber(ARGV[2])
       |local limit = tonumber(ARGV[3])
+      |local member = ARGV[4] -- 🌟 스칼라에서 넘겨준 100% 유니크한 요청 UUID
       |
       |-- 윈도우 범위를 벗어난 오래된 타임스탬프 기록 삭제
       |local clearBefore = now - window
       |redis.call('zremrangebyscore', key, '-inf', clearBefore)
       |
-      |-- 현재 윈도우 내의 요청 횟수 확인
+      |-- 현재 윈도우 내의 실제 요청 횟수 확인
       |local currentRequests = redis.call('zcard', key)
       |
       |if currentRequests < limit then
-      |    -- 제한 미만이면 현재 시간 추가 후 승인 (1 리턴)
-      |    redis.call('zadd', key, now, ARGV[1])
+      |    -- 🌟 중복될 리 없는 고유 member와 함께 현재 시간을 Score로 추가
+      |    redis.call('zadd', key, now, member)
       |    redis.call('expire', key, math.ceil(window / 1000) + 1)
       |    return 1
       |else
@@ -61,13 +62,14 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
     for {
       now <- IO(Instant.now().toEpochMilli) // 현재 타임스탬프 (ms)
       windowMs = windowSeconds * 1000
+      requestId <- IO(java.util.UUID.randomUUID().toString) // 🌟 각 요청을 구별할 고유 고스트 키 생성
 
       // Lua 스크립트 실행 (리턴 타입은 RedisType.Integer -> Long 매핑)
       result <- redisCmd.eval(
         script = slidingWindowLua,
         output = ScriptOutputType.Integer,
         keys = List(limitKey),
-        values = List(now.toString, windowMs.toString, maxRequests.toString)
+        values = List(now.toString, windowMs.toString, maxRequests.toString, requestId)
       )
     } yield result == 1L // 1이면 true(승인), 0이면 false(차단)
 
