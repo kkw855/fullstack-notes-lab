@@ -34,21 +34,18 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
       |
       |-- Redis 서버의 현재 시간 가져오기 (초, 마이크로초)
       |local redisTime = redis.call('TIME')
-      |local now = (tonumber(redisTime[1]) * 1000) + math.
-  floor(tonumber(redisTime[2]) / 1000)
+      |local now = (tonumber(redisTime[1]) * 1000) + math.floor(tonumber(redisTime[2]) / 1000)
       |
       |-- 윈도우 범위를 벗어난 오래된 타임스탬프 기록 삭제
       |local clearBefore = now - window
-      |redis.call('zremrangebyscore', key, '-inf',
-  clearBefore)
+      |redis.call('zremrangebyscore', key, '-inf', clearBefore)
       |
       |-- 현재 윈도우 내의 실제 요청 횟수 확인
       |local currentRequests = redis.call('zcard', key)
       |
       |if currentRequests < limit then
       |    redis.call('zadd', key, now, member)
-      |    redis.call('expire', key, math.ceil(window /
-  1000) + 1)
+      |    redis.call('expire', key, math.ceil(window / 1000) + 1)
       |    return 1
       |else
       |    return 0

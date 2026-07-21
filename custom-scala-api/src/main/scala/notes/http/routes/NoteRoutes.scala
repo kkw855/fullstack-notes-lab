@@ -19,7 +19,7 @@ final case class JsonResult(message: String) derives Codec.AsObject
 
 class NoteRoutes private (notes: Notes, rateLimiter: RateLimiter) extends HttpValidationDsl {
   private val allNotesRoute: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root =>
-    rateLimiter.isAllowed("rate:my-rate-limit", maxRequests = 10, windowSeconds = 20).flatMap {
+    rateLimiter.isAllowed("rate:my-rate-limit", maxRequests = 10, windowSeconds = 60).flatMap {
       case true  => notes.all().flatMap(Ok(_))
       case false => TooManyRequests(JsonResult("Too many requests, please try again later"))
     }
