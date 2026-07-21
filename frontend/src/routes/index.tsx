@@ -4,10 +4,14 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { RateLimitedUI } from '#/components/rate-limited-ui'
-import { useNotes } from '#/features/notes/api/get-notes'
+import { getNotesQueryOptions, useNotes } from '#/features/notes/api/get-notes'
 import { NoteCard } from '#/features/notes/components/note-card'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(getNotesQueryOptions()),
+  component: App,
+})
 
 function App() {
   const notesQuery = useNotes()
@@ -32,7 +36,7 @@ function App() {
     }
   }, [isActualError])
 
-  const notes = notesQuery.data?.data
+  const notes = notesQuery.data
 
   // 4. 💡 TanStack Query의 로딩 상태를 먼저 방어해 주는 것이 안전합니다.
   if (notesQuery.isLoading)

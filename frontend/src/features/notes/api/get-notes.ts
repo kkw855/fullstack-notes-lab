@@ -4,11 +4,9 @@ import type { Note } from '#/types/api'
 import { api } from '@/lib/api-client'
 import type { QueryConfig } from '@/lib/react-query'
 
-export const getNotes = (): Promise<{
-  data: Note[]
-  // meta: Meta
-}> => {
-  return api.get(`/notes`)
+export const getNotes = async (): Promise<Note[]> => {
+  const response = await api.get(`/notes`)
+  return response.data
 }
 
 export const getNotesQueryOptions = () => {
