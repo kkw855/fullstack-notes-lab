@@ -10,6 +10,5 @@ final case class RedisConfig(
     host: Host,
     port: Port,
     pass: String,
-    masterSet: String,
-    useSystemDnsResolver: Boolean = false
+    masterSet: String
 ) derives ConfigReader

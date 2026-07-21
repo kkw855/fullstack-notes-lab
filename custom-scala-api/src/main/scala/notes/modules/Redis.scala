@@ -33,28 +33,23 @@ object Redis {
       .withCredentials(RedisCredentials.Password(config.pass))
 
     for {
-      client <- redisClient(redisUriConfig, config.useSystemDnsResolver)
+      client <- redisClient(redisUriConfig)
       commands <- Redis4Cats[IO].fromClient(client, RedisCodec.Utf8)
     } yield commands
   }
 
   private def redisClient(
-      redisUriConfig: RedisUriConfig,
-      useSystemDnsResolver: Boolean
+      redisUriConfig: RedisUriConfig
   ): Resource[IO, RedisClient] =
-    if (useSystemDnsResolver) {
-      for {
-        resources <- systemDnsClientResources
-        redis4CatsConfig = Redis4CatsConfig().withClientResources(resources)
-        client <- RedisClient[IO].fromConfig(
-          redisUriConfig,
-          ClientOptions.create(),
-          redis4CatsConfig
-        )
-      } yield client
-    } else {
-      RedisClient[IO].fromConfig(redisUriConfig)
-    }
+    for {
+      resources <- systemDnsClientResources
+      redis4CatsConfig = Redis4CatsConfig().withClientResources(resources)
+      client <- RedisClient[IO].fromConfig(
+        redisUriConfig,
+        ClientOptions.create(),
+        redis4CatsConfig
+      )
+    } yield client
 
   private val systemDnsClientResources: Resource[IO, ClientResources] =
     Resource.make {

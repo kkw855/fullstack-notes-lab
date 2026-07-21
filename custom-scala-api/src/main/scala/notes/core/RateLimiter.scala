@@ -5,8 +5,6 @@ import cats.effect.IO
 import dev.profunktor.redis4cats.RedisCommands
 import dev.profunktor.redis4cats.effects.ScriptOutputType
 
-import java.time.Instant
-
 trait RateLimiter {
 
   /** 주어진 키에 대한 요청이 처리 한도(rate limit) 내에 있는지 확인합니다.
@@ -30,38 +28,40 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
   private val slidingWindowLua: String =
     """
       |local key = KEYS[1]
-      |local now = tonumber(ARGV[1])
-      |local window = tonumber(ARGV[2])
-      |local limit = tonumber(ARGV[3])
-      |local member = ARGV[4] -- 🌟 스칼라에서 넘겨준 100% 유니크한 요청 UUID
+      |local window = tonumber(ARGV[1])
+      |local limit = tonumber(ARGV[2])
+      |local member = ARGV[3]
+      |
+      |-- Redis 서버의 현재 시간 가져오기 (초, 마이크로초)
+      |local redisTime = redis.call('TIME')
+      |local now = (tonumber(redisTime[1]) * 1000) + math.
+  floor(tonumber(redisTime[2]) / 1000)
       |
       |-- 윈도우 범위를 벗어난 오래된 타임스탬프 기록 삭제
       |local clearBefore = now - window
-      |redis.call('zremrangebyscore', key, '-inf', clearBefore)
+      |redis.call('zremrangebyscore', key, '-inf',
+  clearBefore)
       |
       |-- 현재 윈도우 내의 실제 요청 횟수 확인
       |local currentRequests = redis.call('zcard', key)
       |
       |if currentRequests < limit then
-      |    -- 🌟 중복될 리 없는 고유 member와 함께 현재 시간을 Score로 추가
       |    redis.call('zadd', key, now, member)
-      |    redis.call('expire', key, math.ceil(window / 1000) + 1)
+      |    redis.call('expire', key, math.ceil(window /
+  1000) + 1)
       |    return 1
       |else
-      |    -- 제한 초과 시 차단 (0 리턴)
       |    return 0
       |end
-    """.stripMargin
+        """.stripMargin
 
   // 2. 요청 허용 여부를 판단하는 핵심 메서드
   override def isAllowed(key: String, maxRequests: Int, windowSeconds: Int): IO[Boolean] = {
     val limitKey = s"rate:my-rate-limit"
 
-    // Resource 패턴을 통해 사용 후 커넥션 풀 자원을 안전하게 자동 해제
+    val windowMs = windowSeconds * 1000
 
     for {
-      now <- IO(Instant.now().toEpochMilli) // 현재 타임스탬프 (ms)
-      windowMs = windowSeconds * 1000
       requestId <- IO(java.util.UUID.randomUUID().toString) // 🌟 각 요청을 구별할 고유 고스트 키 생성
 
       // Lua 스크립트 실행 (리턴 타입은 RedisType.Integer -> Long 매핑)
@@ -69,7 +69,7 @@ class LiveRateLimiter private (redisCmd: RedisCommands[IO, String, String]) exte
         script = slidingWindowLua,
         output = ScriptOutputType.Integer,
         keys = List(limitKey),
-        values = List(now.toString, windowMs.toString, maxRequests.toString, requestId)
+        values = List(windowMs.toString, maxRequests.toString, requestId)
       )
     } yield result == 1L // 1이면 true(승인), 0이면 false(차단)
 
