@@ -12,6 +12,9 @@ val circeFs2Version = "0.14.1"
 val http4sVersion = "0.23.36"
 val doobieVersion = "1.0.0-RC12"
 val redis4cats = "2.0.5"
+val testcontainersScalaVersion = "0.44.1"
+val scalaTestVersion = "3.2.20"
+val catsEffectTestingVersion = "1.8.0"
 
 lazy val root = rootProject
   .settings(
@@ -37,10 +40,16 @@ lazy val root = rootProject
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test,
-      "dev.profunktor" %% "redis4cats-effects" % redis4cats
+      "dev.profunktor" %% "redis4cats-effects" % redis4cats,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestingVersion % Test,
+      "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersScalaVersion % Test,
+      "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersScalaVersion % Test
     ),
     Compile / run / mainClass := Some("notes.Application"),
     Compile / run / fork := true,
+    Test / fork := true,
+    Test / javaOptions += "-Dapi.version=1.40",
     assembly / assemblyJarName := "app.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", "maven", xs*) => MergeStrategy.discard
