@@ -6,6 +6,7 @@ import {
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { Check } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { Navbar } from '#/components/navbar'
@@ -54,7 +55,16 @@ function RootDocument({ children }: { children: ReactNode }) {
           <Navbar />
           {children}
         </div>
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          icons={{
+            success: (
+              <div className="flex shrink-0 items-center justify-center rounded-full bg-[#00FF9D]">
+                <Check className="size-5 stroke-3 text-white" />
+              </div>
+            ),
+          }}
+        />
         <TanStackDevtools
           config={{
             position: 'bottom-right',

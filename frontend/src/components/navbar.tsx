@@ -12,10 +12,10 @@ export const Navbar = () => {
           <div className="flex items-center gap-4">
             <Link
               to="/create"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-3xl bg-[#20B658] px-4 py-2 text-sm font-bold transition-colors hover:bg-[#20B658]/70"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-3xl bg-[#20B658] px-4 py-2 text-sm font-bold text-white! transition-colors hover:bg-[#20B658]/70"
             >
-              <PlusIcon className="size-5 text-black" />
-              <span className="text-black">New Note</span>
+              <PlusIcon className="size-5" />
+              <span>New Note</span>
             </Link>
           </div>
         </div>

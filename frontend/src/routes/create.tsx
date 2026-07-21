@@ -25,6 +25,7 @@ function RouteComponent() {
         await navigate({ to: '/' })
       },
       onError: (error) => {
+        // TODO: 429 응답 받았을 때 toast 띄우기
         console.log('Error creating note', error)
         toast.error('Failed to create note')
       },
@@ -100,6 +101,7 @@ function RouteComponent() {
                   <Button
                     type="submit"
                     className="cursor-pointer rounded-xl bg-[#20B658] font-bold hover:bg-[#20B658]/70"
+                    disabled={isSubmitting}
                   >
                     Create Note
                   </Button>

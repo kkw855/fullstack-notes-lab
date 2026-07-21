@@ -1,11 +1,25 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { PenSquareIcon, Trash2Icon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '#/components/ui/button'
+import { useDeleteNote } from '#/features/notes/api/delete-note'
 import type { Note } from '#/types/api'
 
 export const NoteCard = ({ note }: { note: Note }) => {
+  const deleteNoteMutation = useDeleteNote({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success('Note deleted successfully')
+      },
+      onError: (error) => {
+        console.log('Error in handleDelete', error)
+        toast.error('Failed to delete note')
+      },
+    },
+  })
+
   const dateFormat = 'YYYY-MM-DD HH:mm'
 
   return (
@@ -25,10 +39,14 @@ export const NoteCard = ({ note }: { note: Note }) => {
             <PenSquareIcon className="size-4" />
             <Button
               variant="ghost"
-              className="text-red-500"
+              className="cursor-pointer text-red-500"
               onClick={(e) => {
                 e.preventDefault()
-                console.log('trash')
+
+                if (
+                  window.confirm('Are you sure you want to delete this note?')
+                )
+                  deleteNoteMutation.mutate({ noteId: note.id })
               }}
             >
               <Trash2Icon className="size-4" />

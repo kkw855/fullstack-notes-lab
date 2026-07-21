@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { RateLimitedUI } from '#/components/rate-limited-ui'
 import { getNotesQueryOptions, useNotes } from '#/features/notes/api/get-notes'
 import { NoteCard } from '#/features/notes/components/note-card'
+import { NotesNotFound } from '#/features/notes/components/notes-not-found'
 
 export const Route = createFileRoute('/')({
   loader: ({ context }) =>
@@ -60,11 +61,15 @@ function App() {
   // 5. 모든 방어망을 통과한 정상적인 화면 렌더링
   return (
     <main className="mx-auto mt-6 max-w-7xl p-4">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {notes.map((note) => (
-          <NoteCard key={note.id} note={note} />
-        ))}
-      </div>
+      {notes.length === 0 ? (
+        <NotesNotFound />
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {notes.map((note) => (
+            <NoteCard key={note.id} note={note} />
+          ))}
+        </div>
+      )}
     </main>
   )
 }
