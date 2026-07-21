@@ -19,7 +19,13 @@ const hostname = process.env.HOST ?? '0.0.0.0'
 const server = serve({
   port,
   hostname,
-  middleware: [serveStatic({ dir: './dist/client' })],
+  middleware: [
+    serveStatic({
+      dir: './dist/client',
+      // 🌟 static 파일(CSS, JS, 이미지 등)을 1년간 브라우저에 캐싱하도록 설정
+      maxAge: 31536000,
+    }),
+  ],
   fetch: handler.fetch,
 })
 

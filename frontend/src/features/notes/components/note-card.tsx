@@ -12,7 +12,7 @@ export const NoteCard = ({ note }: { note: Note }) => {
     <Link
       to="/note/$id"
       params={{ id: note.id }}
-      className="block w-100 rounded-2xl border-t-4 border-solid border-[#00FF9D] bg-[#181111] p-6  transition-all duration-200 hover:shadow-lg"
+      className="block w-full rounded-2xl border-t-4 border-solid border-[#00FF9D] bg-[#181111] p-6  transition-all duration-200 hover:shadow-lg"
     >
       <div className="space-y-2">
         <h3 className="text-lg font-bold text-white">{note.title}</h3>

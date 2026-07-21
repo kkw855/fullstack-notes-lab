@@ -7,6 +7,7 @@ import { defineConfig } from 'vite'
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
+  // server.proxy 설정은 로컬 개발 서버(npm run dev)를 돌릴 때만 작동하는 설정입니다.
   server: {
     proxy: {
       // 코드에서 /api로 시작하는 요청을 만나면
