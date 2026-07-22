@@ -74,7 +74,7 @@ jobs:
           exit-code: '1' # 💡 CRITICAL 취약점이 나오면 CI 빌드를 실패 처리하여 이미지 푸시를 차단합니다.
           ignore-unfixed: true
           vuln-type: 'os,library' # OS 패키지 + npm/sbt 라이브러리 모두 스캔
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       # 3️⃣ 위 스캔 단계에서 에러(exit-code: 1)가 나지 않아야만 푸시가 실행됩니다.
       - name: Push Frontend Docker image

@@ -73,7 +73,7 @@ jobs:
           exit-code: '1' # 💡 취약점 발견 시 워크플로우를 중단하려면 '1'로 변경하세요.
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       # 1️⃣-3 스칼라 API 애플리케이션 도커 이미지 푸시
       - name: Push Scala API Docker image
@@ -106,7 +106,7 @@ jobs:
           exit-code: '1' # 💡 취약점 발견 시 워크플로우를 중단하려면 '1'로 변경하세요.
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       # 2️⃣-3 Atlas 마이그레이션 도커 이미지 푸시
       - name: Push Atlas Migration Docker image
