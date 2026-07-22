@@ -5,6 +5,10 @@
 # ==========================================
 FROM node:24-alpine AS builder
 
+# 💡 [추가] 컨테이너 내부의 전역 npm을 최신 버전으로 업데이트합니다.
+# 이 한 줄로 내장된 tar(node-tar), undici 등의 취약점이 완벽히 패치됩니다.
+RUN npm install -g npm@latest
+
 WORKDIR /app
 
 # [최적화 팁] 의존성 캐싱을 위해 매니페스트 파일 먼저 복사
