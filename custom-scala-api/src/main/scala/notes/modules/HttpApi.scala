@@ -3,26 +3,29 @@ package notes.modules
 import cats.effect.*
 import cats.implicits.*
 
+import org.typelevel.log4cats.Logger
+
 import org.http4s.*
 import org.http4s.server.*
-import org.http4s.server.middleware.{CORS, ErrorHandling}
 
+import notes.http.middleware.{CorsHandler, GlobalErrorHandler}
 import notes.http.routes.{HealthRoutes, NoteRoutes}
 
-class HttpApi private (core: Core) {
+class HttpApi private (core: Core)(using logger: Logger[IO]) {
   private val healthRoutes = HealthRoutes.apply.routes
   private val noteRoutes = NoteRoutes(core.notes, core.rateLimiter).routes
 
-  // CORS 기본 정책 및 글로벌 예외 복구 탑재
-  val endPoints: HttpRoutes[IO] = ErrorHandling.Recover.total(
-    CORS.policy.withAllowOriginAll(
-      Router(
-        "/api" -> (healthRoutes <+> noteRoutes)
-      )
-    )
+  private val apiRoutes: HttpRoutes[IO] = Router(
+    "/api" -> (healthRoutes <+> noteRoutes)
+  )
+
+  // CORS 및 Global Error Handling 미들웨어 적용
+  val endPoints: HttpRoutes[IO] = CorsHandler(
+    GlobalErrorHandler(apiRoutes)
   )
 }
 
 object HttpApi {
-  def apply(core: Core): Resource[IO, HttpApi] = Resource.pure(new HttpApi(core))
+  def apply(core: Core)(using logger: Logger[IO]): Resource[IO, HttpApi] =
+    Resource.pure(new HttpApi(core))
 }
