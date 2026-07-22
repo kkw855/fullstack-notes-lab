@@ -35,6 +35,10 @@ jobs:
           java-version: '21' # 사용 중이신 Java 버전에 맞춰 변경 (17, 21 등)
           cache: 'sbt' # 💡 핵심: sbt 라이브러리와 컴파일 캐시를 유지해 속도를 끌어올립니다.
 
+      # 💡 [추가] ARC 셀프 호스트 러너 환경에 sbt CLI 도구를 자동으로 설치합니다.
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Run SBT Tests
         run: sbt test
         working-directory: ./custom-scala-api
