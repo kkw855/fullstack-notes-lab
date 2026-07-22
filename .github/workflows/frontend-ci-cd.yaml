@@ -51,16 +51,38 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 1️⃣ 프론트엔드(TanStack Start SSR) 도커 이미지 빌드 및 푸시
-      - name: Build and push Frontend Docker image
+      # 1️⃣ 프론트엔드 도커 이미지 빌드 (로컬 Docker daemon 로드)
+      - name: Build Frontend Docker image
         uses: docker/build-push-action@v5
         with:
           # 💡 중요 1: 컨텍스트와 도커파일 위치를 프론트엔드 서브폴더로 정확히 지정합니다.
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: true
+          load: true
           # 💡 중요 2: github.repository를 그대로 쓰면 스칼라 이미지와 이름이 충돌(오버라이트)되므로
           # 뒤에 명시적으로 /notes-frontend 이름을 붙여 분리합니다.
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/notes-frontend:latest
+            ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}
+
+      # 2️⃣ Trivy 이미지 취약점 검사 (푸시 전)
+      - name: Run Trivy vulnerability scanner on Frontend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1' # 💡 CRITICAL 취약점이 나오면 CI 빌드를 실패 처리하여 이미지 푸시를 차단합니다.
+          ignore-unfixed: true
+          vuln-type: 'os,library' # OS 패키지 + npm/sbt 라이브러리 모두 스캔
+          severity: 'CRITICAL,HIGH'
+
+      # 3️⃣ 위 스캔 단계에서 에러(exit-code: 1)가 나지 않아야만 푸시가 실행됩니다.
+      - name: Push Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/notes-frontend:latest
             ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}
