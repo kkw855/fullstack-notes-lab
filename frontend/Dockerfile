@@ -36,6 +36,11 @@ FROM node:26-alpine
 
 WORKDIR /app
 
+# 💡 최종 이미지에 내장된 npm의 tar(node-tar) 취약점(예: CVE-2026-59873) 패치를 위해
+# npm 자체를 최신 버전으로 업그레이드합니다. builder 스테이지에서 업그레이드해도
+# /usr/local 하위는 최종 이미지로 복사되지 않으므로 반드시 여기서 실행해야 합니다.
+RUN npm install -g npm@latest
+
 # 보안 가이드: 프로덕션에서는 절대 root 계정으로 컨테이너를 구동하지 않습니다.
 # node 이미지에 이미 존재하는 uid 1000 'node' 계정을 사용합니다.
 USER node
