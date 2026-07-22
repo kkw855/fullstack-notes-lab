@@ -1,0 +1,23 @@
+server:
+  port: 5003
+
+spring:
+  application:
+    name: custom-kotlin-api
+
+  datasource:
+    # 💡 쿠버네티스 포트파워딩(kubectl port-forward) 사용 시: jdbc:postgresql://localhost:5432/notes_db
+    # 💡 쿠버네티스 클러스터 내부 배포 시: jdbc:postgresql://<service-name>.<namespace>.svc.cluster.local:5432/notes_db
+    url: jdbc:postgresql://crud-postgres-rw.postgres:5432/notes_db
+    username: admin
+    password: 5q5SP5RIoaq7ZlmBxmtJ4lPjqoXhvcufCJBOngOEEB3PaZckSQ4RZ3vgeU2A2hXP
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+#    hibernate:
+#      ddl-auto: update # 테이블 자동 생성 (개발용)
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
