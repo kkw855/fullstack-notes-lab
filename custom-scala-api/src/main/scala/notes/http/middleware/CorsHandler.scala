@@ -1,11 +1,13 @@
 package notes.http.middleware
 
 import cats.effect.IO
-import scala.concurrent.duration.*
 
 import org.http4s.*
 import org.http4s.server.middleware.{CORS, CORSPolicy}
+
 import org.typelevel.ci.*
+
+import scala.concurrent.duration.*
 
 object CorsHandler {
   val policy: CORSPolicy = CORS.policy
@@ -13,7 +15,9 @@ object CorsHandler {
     .withAllowOriginAll
     .withAllowCredentials(false)
     // 허용할 HTTP 메서드 목록
-    .withAllowMethodsIn(Set(Method.GET, Method.POST, Method.PUT, Method.DELETE, Method.OPTIONS, Method.PATCH))
+    .withAllowMethodsIn(
+      Set(Method.GET, Method.POST, Method.PUT, Method.DELETE, Method.OPTIONS, Method.PATCH)
+    )
     // 클라이언트가 요청 시 실어 보낼 수 있는 허용 헤더 목록을 정의합니다.
     .withAllowHeadersIn(
       Set(
