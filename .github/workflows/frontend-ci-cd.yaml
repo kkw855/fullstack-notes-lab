@@ -29,10 +29,10 @@ jobs:
           fetch-depth: 0
 
       # 💡 [필수] ARC 러너에 Node.js 환경을 세팅합니다.
-      - name: Set up Node.js 26
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '26'
+          node-version: '22'
           cache: 'npm' # npm 의존성 캐싱 활성화
           cache-dependency-path: frontend/package-lock.json
 

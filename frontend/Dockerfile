@@ -3,7 +3,7 @@
 # ==========================================
 # 1단계: 빌드 스테이지 (전체 의존성 + Vite 빌드)
 # ==========================================
-FROM node:26-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN npm run build
 # TanStack Start의 서버 번들은 react, @tanstack/react-router 등을
 # 외부 모듈로 남겨두므로 런타임에도 node_modules가 필요합니다.
 # devDependencies(vite, eslint 등)를 제외해 이미지 용량을 줄입니다.
-FROM node:26-alpine AS deps
+FROM node:22-alpine AS deps
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ==========================================
 # 3단계: 런타임 스테이지 (최소 구성)
 # ==========================================
-FROM node:26-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
