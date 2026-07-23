@@ -92,9 +92,9 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                     placeholder="Note Title"
                     {...register('title')}
                   />
-                  {errors.content && (
+                  {errors.title && (
                     <span className="text-xs text-red-500">
-                      {errors.content.message}
+                      {errors.title.message}
                     </span>
                   )}
                 </div>

@@ -42,6 +42,11 @@ jobs:
       #   run: npm run lint && npm test
       #   working-directory: ./frontend
 
+      # 🧪 3. [추가] 도커 빌드 전에 프론트엔드 통합 테스트 수행!
+      - name: Run Integration Tests
+        run: npm run test:ci
+        working-directory: ./frontend
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
