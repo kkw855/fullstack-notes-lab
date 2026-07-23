@@ -28,19 +28,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 💡 [선택 사항] 도커 빌드 전에 GHA 러너단에서 lint/test를 먼저 수행하고 싶다면 아래 주석을 해제하세요.
-      # - name: Set up Node.js 24
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '24'
-      #     cache: 'npm' # npm 의존성 캐싱 활성화
-      #     cache-dependency-path: frontend/package-lock.json
-      # - name: Install dependencies
-      #   run: npm ci
-      #   working-directory: ./frontend
-      # - name: Run lint & tests
-      #   run: npm run lint && npm test
-      #   working-directory: ./frontend
+      # 💡 [필수] ARC 러너에 Node.js 환경을 세팅합니다.
+      - name: Set up Node.js 26
+        uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: 'npm' # npm 의존성 캐싱 활성화
+          cache-dependency-path: frontend/package-lock.json
+
+      # 💡 [필수] 테스트 및 빌드를 실행하기 위해 의존성 패키지를 설치합니다.
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
 
       # 🧪 3. [추가] 도커 빌드 전에 프론트엔드 통합 테스트 수행!
       - name: Run Integration Tests
