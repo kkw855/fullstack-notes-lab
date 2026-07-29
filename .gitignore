@@ -1,7 +1,11 @@
-# Created by https://www.toptal.com/developers/gitignore/api/git,sbt,node,macos,react,scala,windows,intellij+all,kotlin,gradle
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,sbt,node,macos,react,scala,windows,intellij+all,kotlin,gradle
+# Created by https://www.toptal.com/developers/gitignore/api/git,sbt,node,macos,react,scala,gradle,kotlin,windows,intellij+all,maven
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,sbt,node,macos,react,scala,gradle,kotlin,windows,intellij+all,maven
 
 .idea
+
+*secret.raw.yaml
+*secret.unsealed.yaml
+secret-plain.yaml
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -165,6 +169,25 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
 ### Node ###
 # Logs
 logs
@@ -322,7 +345,6 @@ sketch
 # http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
 
 dist/*
-target/
 lib_managed/
 src_managed/
 project/boot/
@@ -366,7 +388,7 @@ $RECYCLE.BIN/
 ### Gradle ###
 .gradle
 **/build/
-!src/**/build/
+!catalog-service/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -382,12 +404,10 @@ gradle-app.setting
 
 # Eclipse Gradle plugin generated files
 # Eclipse Core
-.project
 # JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
 
-# End of https://www.toptal.com/developers/gitignore/api/git,sbt,node,macos,react,scala,windows,intellij+all,kotlin,gradle
+# End of https://www.toptal.com/developers/gitignore/api/git,sbt,node,macos,react,scala,gradle,kotlin,windows,intellij+all,maven
