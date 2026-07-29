@@ -15,8 +15,8 @@ trait DoobieSpec extends TestContainerForAll { self: Suite =>
 
   // 🌟 createContainer()를 오버라이드하여 프로젝트 루트의 ./schema.sql을 직접 마운트합니다.
   override val containerDef: PostgreSQLContainer.Def = new PostgreSQLContainer.Def(
-    dockerImageName = DockerImageName.parse("postgres:16-alpine"),
-    databaseName = "notes_db",
+    dockerImageName = DockerImageName.parse("postgres:18.4-alpine"),
+    databaseName = "notes_db_scala",
     username = "test_user",
     password = "test_password"
   ) {
