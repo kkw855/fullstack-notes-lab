@@ -6,11 +6,11 @@ spring:
     name: custom-kotlin-api
 
   datasource:
-    # 💡 쿠버네티스 포트파워딩(kubectl port-forward) 사용 시: jdbc:postgresql://localhost:5432/notes_db
-    # 💡 쿠버네티스 클러스터 내부 배포 시: jdbc:postgresql://<service-name>.<namespace>.svc.cluster.local:5432/notes_db
-    url: jdbc:postgresql://crud-postgres-rw.postgres:5432/notes_db
-    username: admin
-    password: 5q5SP5RIoaq7ZlmBxmtJ4lPjqoXhvcufCJBOngOEEB3PaZckSQ4RZ3vgeU2A2hXP
+    # 💡 쿠버네티스 포트포워딩(kubectl port-forward) 사용 시: jdbc:postgresql://localhost:5432/notes_db_kotlin
+    # 💡 쿠버네티스 클러스터 내부 배포 시: jdbc:postgresql://<service-name>.<namespace>.svc.cluster.local:5432/notes_db_kotlin
+    url: ${DB_URL:jdbc:postgresql://postgres-rw.postgres.svc.cluster.local:5432/notes_db_kotlin}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
