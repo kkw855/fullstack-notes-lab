@@ -36,7 +36,9 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // Flyway - DB 스키마 마이그레이션 (앱 시작 시 자동 실행)
-    implementation("org.flywaydb:flyway-core")
+    // 💡 Spring Boot 4.x부터는 auto-configuration이 모듈화되어, flyway-core만 넣으면 인식이 안 되고
+    //    반드시 spring-boot-starter-flyway를 추가해야 자동설정이 활성화됩니다.
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
 
     // Test
