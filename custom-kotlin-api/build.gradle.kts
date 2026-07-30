@@ -24,6 +24,9 @@ dependencies {
     // Web
     implementation("org.springframework.boot:spring-boot-starter-web")
 
+    // 쿠버네티스 readiness/liveness probe용 /actuator/health 엔드포인트
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     // JPA & jOOQ
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
