@@ -20,6 +20,13 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        // Spring Boot 4.1.0의 dependency-management가 testcontainers 버전을 자동 관리하지 않아 명시적으로 BOM import
+        mavenBom("org.testcontainers:testcontainers-bom:2.0.5")
+    }
+}
+
 dependencies {
     // Web
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -46,6 +53,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(kotlin("stdlib"))
+
+    // Testcontainers - @SpringBootTest가 실제 DB(Flyway 마이그레이션 포함)에 접속해서
+    // 컨텍스트를 로드할 수 있도록 테스트 전용 임시 Postgres 컨테이너 사용
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:testcontainers-postgresql")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
 kotlin {
