@@ -67,7 +67,7 @@ jobs:
 
       # 1️⃣-2 Trivy 이미지 취약점 검사 (스칼라 API 이미지)
       - name: Run Trivy vulnerability scanner on Scala API image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0 (SHA 고정 - 공급망 공격 이력 때문에 master 태그 미사용)
         with:
           image-ref: 'ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}'
           format: 'table'
@@ -100,7 +100,7 @@ jobs:
 
       # 2️⃣-2 Trivy 이미지 취약점 검사 (Atlas 마이그레이션 이미지)
       - name: Run Trivy vulnerability scanner on Atlas Migration image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0 (SHA 고정 - 공급망 공격 이력 때문에 master 태그 미사용)
         with:
           image-ref: 'ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}'
           format: 'table'
