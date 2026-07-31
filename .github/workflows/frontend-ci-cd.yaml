@@ -72,7 +72,7 @@ jobs:
 
       # 2️⃣ Trivy 이미지 취약점 검사 (푸시 전)
       - name: Run Trivy vulnerability scanner on Frontend image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0 (SHA 고정 - 공급망 공격 이력 때문에 master 태그 미사용)
         with:
           image-ref: 'ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}'
           format: 'table'
@@ -109,14 +109,14 @@ jobs:
 
           # OS 환경(Mac vs Linux)에 따른 sed 치환 처리
           if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" deployment.yaml
+            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" base/deployment.yaml
           else
-            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" deployment.yaml
+            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:.*|image: ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ github.sha }}|g" base/deployment.yaml
           fi
 
           # Git 커밋 및 푸시
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add deployment.yaml
+          git add base/deployment.yaml
           git commit -m "Update Frontend image to ${{ github.sha }}"
           git push -f https://${GIT_TOKEN}@github.com/kkw855/fullstack-notes-frontend-gitops.git main
