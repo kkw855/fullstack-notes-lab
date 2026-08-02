@@ -30,7 +30,9 @@ export const NoteCard = ({ note }: { note: Note }) => {
     >
       <div className="space-y-2">
         <h3 className="text-lg font-bold text-white">{note.title}</h3>
-        <p className="line-clamp-3 text-white/60">{note.content}</p>
+        <p className="line-clamp-8 whitespace-pre-wrap text-white/60">
+          {note.content}
+        </p>
         <div className="mt-6 flex items-center justify-between text-white/60!">
           <span className="text-sm">
             {dayjs(note.createdAt).format(dateFormat)}

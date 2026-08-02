@@ -11,6 +11,7 @@ import {
   createNoteInputSchema,
 } from '#/features/notes/api/create-note'
 import { useDeleteNote } from '#/features/notes/api/delete-note'
+import { AutoResizeTextArea } from '#/features/notes/components/auto-resize-text-area'
 
 type Props = {
   defaultValues: CreateNoteInput
@@ -102,12 +103,11 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                   <label htmlFor="content">
                     <span className="text-sm">Content</span>
                   </label>
-                  <textarea
+                  <AutoResizeTextArea
                     id="content"
                     className="rounded-2xl bg-[#1C1819] p-3"
-                    rows={5}
                     placeholder="Write your note here..."
-                    {...register('content')}
+                    registration={register('content')}
                   />
                   {errors.content && (
                     <span className="text-xs text-red-500">
