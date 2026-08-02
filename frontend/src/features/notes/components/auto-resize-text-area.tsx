@@ -1,6 +1,6 @@
+import { Option, pipe } from 'effect'
 import { type TextareaHTMLAttributes, useLayoutEffect, useRef } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
-
 type AutoResizeTextAreaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   registration: UseFormRegisterReturn
 }
@@ -18,9 +18,14 @@ export const AutoResizeTextArea = ({
   }
 
   useLayoutEffect(() => {
-    if (textareaRef.current) {
-      resize(textareaRef.current)
-    }
+    pipe(
+      textareaRef.current,
+      Option.fromNullable,
+      Option.match({
+        onNone: () => {},
+        onSome: resize,
+      }),
+    )
   }, [])
 
   return (
