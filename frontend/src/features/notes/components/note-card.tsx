@@ -35,7 +35,7 @@ export const NoteCard = ({ note }: { note: Note }) => {
         </p>
         <div className="mt-6 flex items-center justify-between text-white/60!">
           <span className="text-sm">
-            {dayjs(note.createdAt).format(dateFormat)}
+            {dayjs(note.updatedAt).format(dateFormat)}
           </span>
           <div className="flex items-center gap-1">
             <PenSquareIcon className="size-4" />
