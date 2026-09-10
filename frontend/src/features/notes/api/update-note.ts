@@ -1,31 +1,23 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { z } from 'zod'
 
+import type { CreateNoteInput } from '#/features/notes/api/create-note'
 import { getNotesQueryOptions } from '#/features/notes/api/get-notes'
 import { api } from '#/lib/api-client'
 import type { MutationConfig } from '#/lib/react-query'
 import type { Note } from '#/types/api'
 
-export const updateNoteInputSchema = z.object({
-  title: z.string().trim().min(1, 'Required'),
-  content: z.string().trim().min(1, 'Required'),
-})
-
-export type UpdateNoteInput = z.infer<typeof updateNoteInputSchema>
-
 export const updateNote = async ({
-  data,
   noteId,
+  data,
 }: {
-  data: UpdateNoteInput
   noteId: string
+  data: CreateNoteInput
 }): Promise<Note> => {
   const response = await api.put(`/notes/${noteId}`, data)
   return response.data
 }
 
 type UseUpdateNoteOptions = {
-  noteId: string
   mutationConfig?: MutationConfig<typeof updateNote>
 }
 
