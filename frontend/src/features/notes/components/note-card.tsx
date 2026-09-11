@@ -34,7 +34,8 @@ export const NoteCard = ({ note }: { note: Note }) => {
     >
       <div className="space-y-2">
         <h3 className="text-lg font-bold text-white">{note.title}</h3>
-        <div className="prose prose-sm max-h-96 max-w-none overflow-hidden mask-[linear-gradient(to_bottom,black_70%,transparent)] prose-invert">
+        {/* max-h-96(24rem) 기준: 마스크는 max-h - 4rem 부터 max-h 까지 페이드. max-h 바꾸면 20rem/24rem 도 같이 변경 */}
+        <div className="prose prose-sm max-h-96 max-w-none overflow-hidden mask-[linear-gradient(to_bottom,black_20rem,transparent_24rem)] prose-invert">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{
