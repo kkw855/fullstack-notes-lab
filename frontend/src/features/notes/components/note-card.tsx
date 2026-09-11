@@ -1,6 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { PenSquareIcon, Trash2Icon } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
+import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 
 import { Button } from '#/components/ui/button'
@@ -24,15 +27,25 @@ export const NoteCard = ({ note }: { note: Note }) => {
 
   return (
     <Link
+      preload={false}
       to="/note/$id"
       params={{ id: note.id }}
       className="block w-full rounded-2xl border-t-4 border-solid border-[#00FF9D] bg-[#181111] p-6  transition-all duration-200 hover:shadow-lg"
     >
       <div className="space-y-2">
         <h3 className="text-lg font-bold text-white">{note.title}</h3>
-        <p className="line-clamp-8 whitespace-pre-wrap text-white/60">
-          {note.content}
-        </p>
+        <div className="prose prose-sm max-h-96 max-w-none overflow-hidden mask-[linear-gradient(to_bottom,black_70%,transparent)] prose-invert">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            components={{
+              a: ({ children }) => (
+                <span className="underline">{children}</span>
+              ),
+            }}
+          >
+            {note.content}
+          </ReactMarkdown>
+        </div>
         <div className="mt-6 flex items-center justify-between text-white/60!">
           <span className="text-sm">
             {dayjs(note.updatedAt).format(dateFormat)}
