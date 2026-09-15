@@ -1,3 +1,4 @@
+import libraryCss from '@endsoul/react-ui/style.css?url'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import {
@@ -33,6 +34,10 @@ export const Route = createRootRouteWithContext<{
       },
     ],
     links: [
+      {
+        rel: 'stylesheet',
+        href: libraryCss,
+      },
       {
         rel: 'stylesheet',
         href: appCss,

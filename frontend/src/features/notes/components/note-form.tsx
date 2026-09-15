@@ -1,8 +1,18 @@
+import {
+  Tabs,
+  TabsIndicator,
+  TabsList,
+  TabsPanel,
+  TabsTab,
+} from '@endsoul/react-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { ArrowLeftIcon, Trash2Icon } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
+import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 
 import { Button } from '#/components/ui/button'
@@ -31,6 +41,10 @@ export const NoteFormLayout = ({ children }: { children: ReactNode }) => (
 export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
   const navigate = useNavigate()
 
+  const [tab, setTab] = useState<'write' | 'preview'>(
+    noteId ? 'preview' : 'write',
+  )
+
   const deleteMutation = useDeleteNote({
     mutationConfig: {
       onSuccess: async () => {
@@ -47,6 +61,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
   const {
     handleSubmit,
     register,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues,
@@ -110,12 +125,37 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
               <label htmlFor="content">
                 <span className="text-sm">Content</span>
               </label>
-              <AutoResizeTextArea
-                id="content"
-                className="rounded-2xl bg-[#1C1819] p-3"
-                placeholder="Write your note here..."
-                registration={register('content')}
-              />
+              <Tabs value={tab} onValueChange={setTab} className="w-full">
+                <TabsList>
+                  <TabsTab value="write">Write</TabsTab>
+                  <TabsTab value="preview">Preview</TabsTab>
+                  <TabsIndicator className="bg-[#1C1819]" />
+                </TabsList>
+                <div className="w-full border border-white/10 bg-[#1C1819]">
+                  <TabsPanel value="write" className="p-0">
+                    <AutoResizeTextArea
+                      id="content"
+                      className="w-full rounded-2xl p-4"
+                      placeholder="Write your note here..."
+                      registration={register('content')}
+                    />
+                  </TabsPanel>
+                  <TabsPanel value="preview" className="p-0">
+                    <div className="prose prose-sm max-w-none p-4 prose-invert">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkBreaks]}
+                        components={{
+                          a: ({ children }) => (
+                            <span className="underline">{children}</span>
+                          ),
+                        }}
+                      >
+                        {getValues('content')}
+                      </ReactMarkdown>
+                    </div>
+                  </TabsPanel>
+                </div>
+              </Tabs>
               {errors.content && (
                 <span className="text-xs text-red-500">
                   {errors.content.message}
