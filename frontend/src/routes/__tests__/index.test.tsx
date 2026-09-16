@@ -7,8 +7,8 @@ import { notesDb } from '#/testing/mocks/db'
 import { server } from '#/testing/mocks/server'
 import { renderApp } from '#/testing/render-app'
 
-describe('/ (notes list)', () => {
-  it('renders notes fetched from the API', async () => {
+describe('/ (노트 목록)', () => {
+  it('API에서 받아온 노트를 화면에 보여준다', async () => {
     notesDb.reset([
       { title: 'First note', content: 'First note content' },
       { title: 'Second note', content: 'Second note content' },
@@ -20,7 +20,7 @@ describe('/ (notes list)', () => {
     expect(screen.getByText('Second note')).toBeInTheDocument()
   })
 
-  it('shows the empty state when there are no notes', async () => {
+  it('노트가 없으면 빈 상태 화면을 보여준다', async () => {
     renderApp()
 
     expect(await screen.findByText('No notes yet')).toBeInTheDocument()
@@ -29,7 +29,7 @@ describe('/ (notes list)', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows the rate-limited UI when the API returns 429', async () => {
+  it('API가 429를 반환하면 요청 제한 화면을 보여준다', async () => {
     server.use(
       http.get('/api/notes', () =>
         HttpResponse.json({ message: 'Too Many Requests' }, { status: 429 }),
@@ -41,7 +41,7 @@ describe('/ (notes list)', () => {
     expect(await screen.findByText('Rate Limit Reached')).toBeInTheDocument()
   })
 
-  it('deletes a note from the list', async () => {
+  it('목록에서 노트를 삭제한다', async () => {
     const user = userEvent.setup()
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     notesDb.reset([{ title: 'Note to delete', content: 'Bye' }])
@@ -57,7 +57,7 @@ describe('/ (notes list)', () => {
     expect(notesDb.list()).toHaveLength(0)
   })
 
-  it('keeps the note when the delete confirmation is dismissed', async () => {
+  it('삭제 확인창에서 취소하면 노트를 그대로 둔다', async () => {
     const user = userEvent.setup()
     vi.spyOn(window, 'confirm').mockReturnValue(false)
     notesDb.reset([{ title: 'Note to keep', content: 'Stay' }])

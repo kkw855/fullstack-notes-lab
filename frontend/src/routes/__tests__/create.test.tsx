@@ -6,7 +6,7 @@ import { notesDb } from '#/testing/mocks/db'
 import { renderApp } from '#/testing/render-app'
 
 describe('/create', () => {
-  it('creates a note and redirects back to the notes list', async () => {
+  it('노트를 생성하고 목록 화면으로 돌아간다', async () => {
     const user = userEvent.setup()
     renderApp({ initialLocation: '/create' })
 
@@ -23,7 +23,7 @@ describe('/create', () => {
     expect(notesDb.list()).toMatchObject([{ title: 'Integration Test Note' }])
   })
 
-  it('does not submit or navigate away when required fields are empty', async () => {
+  it('필수 입력값이 비어 있으면 제출하지 않고 화면도 이동하지 않는다', async () => {
     const user = userEvent.setup()
     renderApp({ initialLocation: '/create' })
 

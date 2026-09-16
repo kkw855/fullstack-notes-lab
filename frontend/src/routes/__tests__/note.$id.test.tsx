@@ -6,7 +6,7 @@ import { notesDb } from '#/testing/mocks/db'
 import { renderApp } from '#/testing/render-app'
 
 describe('/note/$id', () => {
-  it('pre-fills the form with the existing note and saves changes', async () => {
+  it('기존 노트 내용을 폼에 채우고 수정한 내용을 저장한다', async () => {
     notesDb.reset([{ title: 'Original Title', content: 'Original content' }])
     const [note] = notesDb.list()
     const user = userEvent.setup()
@@ -15,6 +15,8 @@ describe('/note/$id', () => {
 
     const titleInput = await screen.findByLabelText<HTMLInputElement>('Title')
     await waitFor(() => expect(titleInput).toHaveValue('Original Title'))
+
+    await user.click(screen.getByRole('tab', { name: 'Write' }))
     expect(screen.getByLabelText('Content')).toHaveValue('Original content')
 
     await user.clear(titleInput)
@@ -26,7 +28,7 @@ describe('/note/$id', () => {
     expect(notesDb.find(note.id)).toMatchObject({ title: 'Updated Title' })
   })
 
-  it('deletes the note and redirects back to the notes list', async () => {
+  it('노트를 삭제하고 목록 화면으로 돌아간다', async () => {
     notesDb.reset([{ title: 'Doomed Note', content: 'Will be deleted' }])
     const [note] = notesDb.list()
     const user = userEvent.setup()
