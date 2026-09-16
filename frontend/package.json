@@ -18,7 +18,7 @@
     "check": "prettier --check ."
   },
   "dependencies": {
-    "@endsoul/react-ui": "^0.2.2",
+    "@endsoul/react-ui": "^0.3.0",
     "@hookform/resolvers": "^5.4.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",

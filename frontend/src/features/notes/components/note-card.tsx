@@ -1,3 +1,4 @@
+import { Button } from '@endsoul/react-ui'
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { PenSquareIcon, Trash2Icon } from 'lucide-react'
@@ -6,7 +7,6 @@ import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 
-import { Button } from '#/components/ui/button'
 import { useDeleteNote } from '#/features/notes/api/delete-note'
 import type { Note } from '#/types/api'
 

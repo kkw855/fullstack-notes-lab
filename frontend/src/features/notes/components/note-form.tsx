@@ -1,4 +1,6 @@
 import {
+  Button,
+  Input,
   Tabs,
   TabsIndicator,
   TabsList,
@@ -15,8 +17,6 @@ import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 
-import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
 import {
   type CreateNoteInput,
   createNoteInputSchema,
@@ -84,7 +84,6 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
         </Link>
         {noteId && (
           <Button
-            variant="outline"
             className="cursor-pointer border-red-400! text-red-400 hover:bg-red-400! hover:text-white"
             onClick={() => {
               if (
@@ -94,7 +93,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
               }
             }}
           >
-            <Trash2Icon /> Delete Note
+            <Trash2Icon className="size-4" /> Delete Note
           </Button>
         )}
       </div>
@@ -111,7 +110,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
               </label>
               <Input
                 id="title"
-                className="rounded-2xl"
+                className="rounded-2xl bg-[#1C1819]"
                 placeholder="Note Title"
                 {...register('title')}
               />
