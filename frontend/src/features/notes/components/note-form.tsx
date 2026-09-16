@@ -130,7 +130,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                   <TabsTab value="preview">Preview</TabsTab>
                   <TabsIndicator className="bg-[#1C1819]" />
                 </TabsList>
-                <div className="w-full border border-white/10 bg-[#1C1819]">
+                <div className="w-full border border-border bg-[#1C1819]">
                   <TabsPanel value="write" className="p-0">
                     <AutoResizeTextArea
                       id="content"
