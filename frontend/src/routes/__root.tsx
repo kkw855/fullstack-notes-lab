@@ -29,10 +29,12 @@ export const Route = createRootRouteWithContext<{
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Notes Lab',
+        title: 'ThinkBoard',
       },
     ],
     links: [
+      { rel: 'icon', href: '/favicon.svg?v=2', type: 'image/svg+xml' },
+      { rel: 'icon', href: '/favicon.ico?v=2', sizes: '32x32' },
       {
         rel: 'stylesheet',
         href: libraryCss,
