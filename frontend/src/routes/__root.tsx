@@ -8,14 +8,13 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { Check } from 'lucide-react'
+import { ThemeProvider } from 'next-themes'
 import type { ReactNode } from 'react'
 
 import { Navbar } from '#/components/navbar'
 import { Toaster } from '#/components/ui/sonner'
 
 import appCss from '../styles.css?url'
-
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -52,24 +51,32 @@ function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
-        <div className="min-h-screen">
-          <Navbar />
-          {children}
-        </div>
-        <Toaster
-          position="top-center"
-          icons={{
-            success: (
-              <div className="flex shrink-0 items-center justify-center rounded-full bg-[#00FF9D]">
-                <Check className="size-5 stroke-3 text-white" />
-              </div>
-            ),
-          }}
-        />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          storageKey="notes-theme"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="min-h-screen">
+            <Navbar />
+            {children}
+          </div>
+          <Toaster
+            position="top-center"
+            icons={{
+              success: (
+                <div className="flex shrink-0 items-center justify-center rounded-full bg-[#00FF9D]">
+                  <Check className="size-5 stroke-3 text-white" />
+                </div>
+              ),
+            }}
+          />
+        </ThemeProvider>
+
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -81,6 +88,7 @@ function RootDocument({ children }: { children: ReactNode }) {
             },
           ]}
         />
+
         <Scripts />
       </body>
     </html>

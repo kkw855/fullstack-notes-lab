@@ -31,7 +31,7 @@ type Props = {
 }
 
 export const NoteFormLayout = ({ children }: { children: ReactNode }) => (
-  <div className="min-h-screen text-white">
+  <div className="min-h-screen text-foreground">
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl">{children}</div>
     </div>
@@ -77,7 +77,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
       <div className="flex justify-between">
         <Link
           to="/"
-          className="mb-8 inline-flex h-10 items-center justify-center gap-2 rounded-3xl px-4 py-2 text-sm font-bold text-white! transition-colors hover:bg-black/50"
+          className="mb-8 inline-flex h-10 items-center justify-center gap-2 rounded-3xl px-4 py-2 text-sm font-bold transition-colors hover:bg-black/50"
         >
           <ArrowLeftIcon className="size-5" />
           Back to Notes
@@ -98,8 +98,8 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
         )}
       </div>
 
-      <div className="bg-[#181111] p-8">
-        <div className="">
+      <div className="bg-muted p-8">
+        <div>
           {!noteId && (
             <h2 className="mb-4 text-2xl font-bold">Create New Note</h2>
           )}
@@ -110,7 +110,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
               </label>
               <Input
                 id="title"
-                className="rounded-2xl bg-[#1C1819]"
+                className="rounded-2xl"
                 placeholder="Note Title"
                 {...register('title')}
               />
@@ -128,9 +128,9 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                 <TabsList>
                   <TabsTab value="write">Write</TabsTab>
                   <TabsTab value="preview">Preview</TabsTab>
-                  <TabsIndicator className="bg-[#1C1819]" />
+                  <TabsIndicator className="bg-muted" />
                 </TabsList>
-                <div className="w-full border border-border bg-[#1C1819]">
+                <div className="w-full border border-border">
                   <TabsPanel value="write" className="p-0">
                     <AutoResizeTextArea
                       id="content"
@@ -140,7 +140,7 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                     />
                   </TabsPanel>
                   <TabsPanel value="preview" className="p-0">
-                    <div className="prose prose-sm max-w-none p-4 prose-invert">
+                    <div className="prose prose-sm max-w-none p-4 dark:prose-invert">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkBreaks]}
                         components={{
