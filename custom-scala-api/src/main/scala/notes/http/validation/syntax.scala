@@ -24,20 +24,13 @@ object syntax {
           EntityDecoder[IO, A]
       ): IO[Response[IO]] =
         req
-          .as[A]
-          // .logError(e => s"Parsing payload failed: $e")
-          .map(validateEntity) // IO[ValidationResult[A]]
-          .flatMap {
-            case Valid(entity) =>
-              serverLogicIfValid(entity) // IO[Response[IO]]
-            case Invalid(errors) =>
-              BadRequest(FailureResponse(errors.toList.map(_.errorMessage).mkString(", ")))
-          }
-          .handleErrorWith {
-            case err: org.http4s.MessageBodyFailure =>
-              BadRequest(FailureResponse(s"Invalid JSON payload: ${err.getMessage}"))
-            case err =>
-              InternalServerError(FailureResponse(s"Unexpected server error: ${err.getMessage}"))
+          .attemptAs[A]
+          .value.flatMap {
+            case Left(decodeFailure) => BadRequest(FailureResponse(s"Invalid JSON payload: ${decodeFailure.getMessage}"))
+            case Right(entity) => validateEntity(entity) match {
+              case Valid(valid) => serverLogicIfValid(valid) // 여기서 난 에러는 GlobalErrorHandler
+              case Invalid(errors) => BadRequest(FailureResponse(errors.toList.map(_.errorMessage).mkString(", ")))
+            }
           }
     }
   }
