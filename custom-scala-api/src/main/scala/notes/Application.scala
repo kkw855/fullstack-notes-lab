@@ -20,7 +20,7 @@ object Application extends IOApp.Simple {
 
   override def run: IO[Unit] =
     ConfigSource.default.loadF[IO, AppConfig]().flatMap {
-      case AppConfig(postgresConfig, emberConfig, redisConfig) =>
+      case AppConfig(postgresConfig, emberConfig, redisConfig, sessionConfig) =>
         val appResource: Resource[IO, Server] = for {
           xa <- Database.makePostgresResource(postgresConfig)
           redisCmd <- Redis.makeRedisResource(redisConfig)
