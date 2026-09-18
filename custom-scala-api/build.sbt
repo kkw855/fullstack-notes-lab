@@ -11,7 +11,9 @@ val circeVersion = "0.14.16"
 val circeFs2Version = "0.14.1"
 val http4sVersion = "0.23.36"
 val doobieVersion = "1.0.0-RC12"
-val redis4cats = "2.0.5"
+val redis4catsVersion = "2.0.5"
+val password4jVersion = "1.8.4"
+val flywayVersion = "13.2.0"
 val testcontainersScalaVersion = "0.44.1"
 val scalaTestVersion = "3.2.20"
 val catsEffectTestingVersion = "1.8.0"
@@ -33,6 +35,7 @@ lazy val root = rootProject
       "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-fs2" % circeFs2Version,
+      "io.circe" %% "circe-literal" % circeVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
       "org.http4s" %% "http4s-circe" % http4sVersion,
@@ -40,7 +43,10 @@ lazy val root = rootProject
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test,
-      "dev.profunktor" %% "redis4cats-effects" % redis4cats,
+      "dev.profunktor" %% "redis4cats-effects" % redis4catsVersion,
+      "com.password4j" % "password4j" % "1.8.4",
+      "org.flywaydb" % "flyway-core" % flywayVersion % Test,
+      "org.flywaydb" % "flyway-database-postgresql" % flywayVersion % Test,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestingVersion % Test,
       "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersScalaVersion % Test,

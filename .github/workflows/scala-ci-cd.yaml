@@ -62,14 +62,14 @@ jobs:
           file: ./custom-scala-api/Dockerfile
           load: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/custom-scala-api:latest            
-            ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:latest            
+            ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:${{ github.sha }}
 
       # 1️⃣-2 Trivy 이미지 취약점 검사 (스칼라 API 이미지)
       - name: Run Trivy vulnerability scanner on Scala API image
         uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0 (SHA 고정 - 공급망 공격 이력 때문에 master 태그 미사용)
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:${{ github.sha }}'
           format: 'table'
           exit-code: '1' # 💡 취약점 발견 시 워크플로우를 중단하려면 '1'로 변경하세요.
           ignore-unfixed: true
@@ -84,41 +84,41 @@ jobs:
           file: ./custom-scala-api/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/custom-scala-api:latest            
-            ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:latest            
+            ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:${{ github.sha }}
 
-      # 2️⃣-1 Atlas 마이그레이션 도커 이미지 빌드 (로컬 Docker daemon 로드)
-      - name: Build Atlas Migration Docker image
+      # 2️⃣-1 Flyway 마이그레이션 도커 이미지 빌드 (로컬 Docker daemon 로드)
+      - name: Build Flyway Migration Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./custom-scala-api
           file: ./custom-scala-api/Dockerfile.migration
           load: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/atlas-migrations:latest            
-            ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:latest            
+            ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:${{ github.sha }}
 
-      # 2️⃣-2 Trivy 이미지 취약점 검사 (Atlas 마이그레이션 이미지)
-      - name: Run Trivy vulnerability scanner on Atlas Migration image
+      # 2️⃣-2 Trivy 이미지 취약점 검사 (Flyway 마이그레이션 이미지)
+      - name: Run Trivy vulnerability scanner on Flyway Migration image
         uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0 (SHA 고정 - 공급망 공격 이력 때문에 master 태그 미사용)
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:${{ github.sha }}'
           format: 'table'
           exit-code: '1' # 💡 취약점 발견 시 워크플로우를 중단하려면 '1'로 변경하세요.
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
-      # 2️⃣-3 Atlas 마이그레이션 도커 이미지 푸시
-      - name: Push Atlas Migration Docker image
+      # 2️⃣-3 Flyway 마이그레이션 도커 이미지 푸시
+      - name: Push Flyway Migration Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./custom-scala-api
           file: ./custom-scala-api/Dockerfile.migration
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/atlas-migrations:latest            
-            ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:latest            
+            ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:${{ github.sha }}
 
       # 3️⃣ [수정 단계] GitOps 레포지토리 업데이트 (deployment 및 migration-job 둘 다 패치)
       - name: Update GitOps repository
@@ -138,19 +138,19 @@ jobs:
           # OS 환경(Mac vs Linux)에 따른 sed 치환 처리
           if [[ "$OSTYPE" == "darwin"* ]]; then
             # 1. API 서버 이미지 태그 업데이트 (기존)
-            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}|g" deployment.yaml
-            # 2. Atlas 마이그레이션 Job 이미지 태그 업데이트 (추가)
-            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}|g" migration-job.yaml
+            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:${{ github.sha }}|g" deployment.yaml
+            # 2. Flyway 마이그레이션 Job 이미지 태그 업데이트 (추가)
+            sed -i '' "s|image: ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:${{ github.sha }}|g" migration-job.yaml
           else
             # 1. API 서버 이미지 태그 업데이트 (기존)
-            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/custom-scala-api:${{ github.sha }}|g" deployment.yaml
-            # 2. Atlas 마이그레이션 Job 이미지 태그 업데이트 (추가)
-            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/atlas-migrations:${{ github.sha }}|g" migration-job.yaml
+            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:.*|image: ghcr.io/${{ github.repository_owner }}/notes/scala/custom-scala-api:${{ github.sha }}|g" deployment.yaml
+            # 2. Flyway 마이그레이션 Job 이미지 태그 업데이트 (추가)
+            sed -i "s|image: ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:.*|image: ghcr.io/${{ github.repository_owner }}/notes/scala/flyway-migrations:${{ github.sha }}|g" migration-job.yaml
           fi
           
           # Git 커밋 및 푸시
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add deployment.yaml migration-job.yaml
-          git commit -m "Update Scala API & Atlas Migration images to ${{ github.sha }}"
+          git commit -m "Update Scala API & Flyway Migration images to ${{ github.sha }}"
           git push -f https://${GIT_TOKEN}@github.com/kkw855/fullstack-notes-scala-gitops.git main
