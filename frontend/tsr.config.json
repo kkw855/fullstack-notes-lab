@@ -1,5 +1,6 @@
 {
   "target": "react",
   "quoteStyle": "single",
-  "semicolons": false
+  "semicolons": false,
+  "routeFileIgnorePattern": "__tests__"
 }

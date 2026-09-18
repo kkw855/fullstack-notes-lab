@@ -72,6 +72,8 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
     submit({ data })
   })
 
+  const content = getValues('content').trim()
+
   return (
     <NoteFormLayout>
       <div className="flex justify-between">
@@ -140,18 +142,22 @@ export const NoteForm = ({ defaultValues, submit, noteId }: Props) => {
                     />
                   </TabsPanel>
                   <TabsPanel value="preview" className="p-0">
-                    <div className="prose prose-sm max-w-none p-4 dark:prose-invert">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkBreaks]}
-                        components={{
-                          a: ({ children }) => (
-                            <span className="underline">{children}</span>
-                          ),
-                        }}
-                      >
-                        {getValues('content')}
-                      </ReactMarkdown>
-                    </div>
+                    {content ? (
+                      <div className="prose prose-sm max-w-none p-4 dark:prose-invert">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm, remarkBreaks]}
+                          components={{
+                            a: ({ children }) => (
+                              <span className="underline">{children}</span>
+                            ),
+                          }}
+                        >
+                          {getValues('content') ?? 'Nothing to preview'}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="p-4 text-sm">Nothing to preview</p>
+                    )}
                   </TabsPanel>
                 </div>
               </Tabs>

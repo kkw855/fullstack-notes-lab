@@ -38,4 +38,27 @@ describe('/create', () => {
     ).toBeInTheDocument()
     expect(notesDb.list()).toHaveLength(0)
   })
+
+  it('Content 가 공백뿐이면 Preview 에 Nothing to preview 문구를 출력한다', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialLocation: '/create' })
+
+    await user.type(await screen.findByLabelText('Content'), '   {enter}  ')
+    await user.click(screen.getByRole('tab', { name: /preview/i }))
+
+    expect(await screen.findByText(/nothing to preview/i)).toBeInTheDocument()
+  })
+
+  it('Content 가 있으면 Preview 에 마크다운을 렌더링한다', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialLocation: '/create' })
+
+    await user.type(await screen.findByLabelText('Content'), '# 제목')
+    await user.click(screen.getByRole('tab', { name: /preview/i }))
+
+    expect(
+      screen.getByRole('heading', { name: '제목', level: 1 }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/nothing to preview/i)).not.toBeInTheDocument()
+  })
 })
