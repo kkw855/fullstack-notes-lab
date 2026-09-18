@@ -193,6 +193,7 @@ export default [
   // 3. 🌟 배열 맨 밑에 최신 플랫 컴피그 스타일로 테일윈드 규칙을 온전하게 병합합니다.
   tailwindcss.configs.recommended,
   {
+    files: ['**/*.{ts,tsx,js,jsx}'],
     settings: {
       tailwindcss: {
         cssConfigPath: './src/styles.css',
@@ -201,7 +202,7 @@ export default [
     rules: {
       'tailwindcss/no-custom-classname': [
         'warn',
-        { whitelist: ['toaster'] },
+        { whitelist: ['inputs', 'toaster'] },
       ],
     },
   },
