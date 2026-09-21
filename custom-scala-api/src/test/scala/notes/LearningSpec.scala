@@ -127,14 +127,16 @@ class LearningSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "Source" in {
+      val firstLine = "-- noinspection SqlNoDataSourceInspectionForFile"
+
       val resource: Resource[IO, BufferedSource] = Resource.fromAutoCloseable(
-        IO.blocking(Source.fromFile("catalog-service/test-data.sql", "UTF-8"))
+        IO.blocking(Source.fromFile("migrations/V1__init_notes.sql", "UTF-8"))
       )
 
       resource.use(bufferedSource => IO.blocking(bufferedSource.getLines().toList)).asserting {
         lines =>
-          lines should have size 28
-          lines.head shouldBe "-- noinspection SqlNoDataSourceInspectionForFile"
+          lines.head.length shouldBe firstLine.length
+          lines.head shouldBe firstLine
       }
     }
 
