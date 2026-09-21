@@ -13,7 +13,7 @@ import org.testcontainers.utility.{DockerImageName, MountableFile}
 // 🌟 class -> trait 변경, self: Suite => 추가
 trait DoobieSpec extends TestContainerForAll { self: Suite =>
 
-  // 🌟 createContainer()를 오버라이드하여 프로젝트 루트의 ./schema.sql을 직접 마운트합니다.
+  // 🌟 createContainer()를 오버라이드하여 프로젝트 루트의 ./migrations 을 직접 마운트합니다.
   override val containerDef: PostgreSQLContainer.Def = new PostgreSQLContainer.Def(
     dockerImageName = DockerImageName.parse("postgres:18.4-alpine"),
     databaseName = "notes_db_scala",
@@ -22,10 +22,11 @@ trait DoobieSpec extends TestContainerForAll { self: Suite =>
   ) {
     override def createContainer(): PostgreSQLContainer = {
       val container = super.createContainer()
-      // 루트의 ./schema.sql -> PostgreSQL 자동 실행 경로로 복사
+      // 루트의 ./migrations -> PostgreSQL 자동 실행 경로로 복사
       container.container.withCopyFileToContainer(
-        MountableFile.forHostPath("./schema.sql"),
-        "/docker-entrypoint-initdb.d/01-schema.sql"
+        // .sql을 파일명 알파벳 순서로 실행하는데, V1__, V2__, V3__가 그대로 올바른 순서라 Flyway와 같은 결과를 만듦
+        MountableFile.forHostPath("./migrations"),
+        "/docker-entrypoint-initdb.d/"
       )
       container
     }

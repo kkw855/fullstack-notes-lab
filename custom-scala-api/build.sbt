@@ -13,6 +13,7 @@ val http4sVersion = "0.23.36"
 val doobieVersion = "1.0.0-RC12"
 val redis4catsVersion = "2.0.5"
 val password4jVersion = "1.8.4"
+val commonsValidatorVersion = "1.11.0"
 val flywayVersion = "13.2.0"
 val testcontainersScalaVersion = "0.44.1"
 val scalaTestVersion = "3.2.20"
@@ -44,7 +45,8 @@ lazy val root = rootProject
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test,
       "dev.profunktor" %% "redis4cats-effects" % redis4catsVersion,
-      "com.password4j" % "password4j" % "1.8.4",
+      "com.password4j" % "password4j" % password4jVersion,
+      "commons-validator" % "commons-validator" % commonsValidatorVersion,
       "org.flywaydb" % "flyway-core" % flywayVersion % Test,
       "org.flywaydb" % "flyway-database-postgresql" % flywayVersion % Test,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
